@@ -1,0 +1,25 @@
+module compare (
+    input z,  // output z from adder
+    input v,  // output v from adder
+    input n,  // output n from adder
+    input alufn[6], 
+    output cmp[16]
+  ) {
+sig cmpLast;
+  always {
+    case(alufn[2:1]){
+      b01:
+        cmpLast = z ;
+      b10:
+        cmpLast = n^v;   
+      
+      b11:
+        cmpLast= z|(n^v);
+      
+      default:
+        cmpLast = b0;
+       }
+    cmp[0] = cmpLast;
+    cmp[15:1] = 7b0;
+    }
+}

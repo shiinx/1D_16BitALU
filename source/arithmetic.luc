@@ -1,0 +1,44 @@
+module arithmetic (
+    input a[16],
+    input b[16],
+    input alufn[6],
+    
+    output out[16],
+    output z,
+    output v,
+    output n
+  
+  ) {
+  
+  sig ans[16];  
+  sig xb[16];
+  
+  always {
+    xb = alufn[0]^b;
+    
+    case(alufn[1:0]){
+      2b00:
+        // add
+        ans = a + xb;
+      2b01:
+        // sub
+        ans = a - xb;
+      2b10:
+        // mult
+        ans = a * xb;
+      default:
+        // error
+        ans = 0;
+    }
+    
+    out = ans;    
+    // z is true when all out is 0
+    // z = nor all values in ans
+    z = ~|ans;
+    // v is true when add operation overflow
+    v = ((a[15]&xb[15]&~ans[15]) | (~a[15]&~xb[15]&ans[15]));
+    // n is true when ans[15] is 1
+    n = ans[15];
+    
+  }
+}
