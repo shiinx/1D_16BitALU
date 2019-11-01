@@ -31,22 +31,34 @@ module alu (
     case(alufn[5:4]){
       2b00: 
         // arithmetic
+        alu = arithmetic.out;
         z = arithmetic.z;
         v = arithmetic.v;
         n = arithmetic.n;
-        alu = arithmetic.out;
       2b01:
         // boolean
         alu =0;
+        z = 0;
+        v = 0;
+        n = 0;
       2b10:
         // shifter
         alu = shifter.shift;
+        z = 0;
+        v = 0;
+        n = 0;
       2b11:
         // compare
-        alu = compare.cmp;
+        alu = compare.cmp;        
+        z = 0;
+        v = 0;
+        n = 0;
       default:
         // default case (error)
         alu = 0;
+        z = 0;
+        v = 0;
+        n = 0;
     }   
   }
 }
