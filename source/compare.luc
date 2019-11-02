@@ -12,14 +12,13 @@ sig cmpLast;
         cmpLast = z ;
       b10:
         cmpLast = n^v;   
-      
       b11:
         cmpLast= z|(n^v);
       
       default:
         cmpLast = b0;
        }
-    cmp[0] = cmpLast;
-    cmp[15:1] = 7b0;
+    cmp[15] = cmpLast;
+    cmp[14:0] = 15b00000000000000;
     }
 }

@@ -18,6 +18,10 @@ module alu (
     arithmetic.b = b;
     arithmetic.alufn = alufn;
     
+    boolean.a = a;
+    boolean.b = b;
+    boolean.alufn = alufn;
+    
     shifter.a = a;
     shifter.b = b;    
     shifter.alufn = alufn;
@@ -37,7 +41,7 @@ module alu (
         n = arithmetic.n;
       2b01:
         // boolean
-        alu =0;
+        alu = boolean.boolean;
         z = 0;
         v = 0;
         n = 0;

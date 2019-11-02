@@ -1,6 +1,50 @@
 module boolean (
+    input a[16], // 16 bits of input a
+    input b[16], // 16 bits of input b
+    input alufn[6], //ALUFN[5:0]
+    
+    output boolean[16] //15 bits of outputs boolean
   ) {
 
   always {
-  }
+    
+    
+    case(alufn[3:0]){
+      
+      // AND
+      4b1000:
+        boolean = a & b; 
+      
+      // OR
+      4b1110:
+        boolean = a | b;
+      
+      // XOR
+      4b0110:
+        boolean = a ^ b; 
+      
+      // 'A'
+      4b1010:
+        boolean = a;
+
+      // NAND
+      4b0111:
+        boolean = ~(a & b);
+
+      // NOR
+      4b0001:
+        boolean = ~(a | b);
+
+      // XNOR
+      4b1001:
+        boolean = ~(a ^ b);
+
+      // 'B'
+      4b1100:
+        boolean = b;
+        
+      default:
+        boolean = 0;
+    }
+  }  
 }
