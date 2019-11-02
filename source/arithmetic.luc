@@ -16,14 +16,14 @@ module arithmetic (
   always {
     xb = alufn[0]^b;
     
-    case(alufn[1:0]){
-      2b00:
+    case(alufn[3:0]){
+      2b0000:
         // add
         ans = a + xb;
-      2b01:
+      2b0001:
         // sub
         ans = a - xb;
-      2b10:
+      2b0010:
         // mult
         ans = a * xb;
       default:
