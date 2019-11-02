@@ -7,12 +7,12 @@ module compare (
   ) {
 sig cmpLast;
   always {
-    case(alufn[2:1]){
-      b01:
+    case(alufn[3:0]){
+      b0011:
         cmpLast = z ;
-      b10:
+      b0101:
         cmpLast = n^v;   
-      b11:
+      b0111:
         cmpLast= z|(n^v);
       
       default:
