@@ -1,11 +1,12 @@
 module alu (
-    input a[16],
-    input b[16],
-    input alufn[6],
-    output z,
-    output v,
-    output n,
-    output alu[16]
+    input a[16], // 16 bits of input a
+    input b[16], // 16 bits of input b
+    input alufn[6], //ALUFN[5:0]
+    
+    output z, // output z
+    output v, // output v
+    output n, // output n
+    output alu[16] // output alu
   ) {
   
   arithmetic arithmetic;

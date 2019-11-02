@@ -1,42 +1,39 @@
 module arithmetic (
-    input a[16],
-    input b[16],
-    input alufn[6],
+    input a[16], // 16 bits of input a
+    input b[16], // 16 bits of input b
+    input alufn[6], //ALUFN[5:0]
     
-    output out[16],
-    output z,
-    output v,
-    output n
+    output out[16], // output for the arithmetic
+    output z, // z output
+    output v, // v output
+    output n // n output
   
   ) {
   
-  sig ans[16];  
-  sig xb[16];
+  sig ans[16];
   
   always {
-    xb = alufn[0]^b;
     
-    case(alufn[1:0]){
-      2b00:
+    case(alufn[3:0]){
+      4b0000:
         // add
-        ans = a + xb;
-      2b01:
+        ans = $signed(a) + $signed(b);
+      4b0001:
         // sub
-        ans = a - xb;
-      2b10:
+        ans = $signed(a) - $signed(b);
+      4b0010:
         // mult
-        ans = a * xb;
+        ans = a * b;
       default:
-        // error
-        ans = 0;
-    }
-    
+        // for compare
+        ans = $signed(a) - $signed(b);
+    }    
     out = ans;    
     // z is true when all out is 0
     // z = nor all values in ans
     z = ~|ans;
     // v is true when add operation overflow
-    v = ((a[15]&xb[15]&~ans[15]) | (~a[15]&~xb[15]&ans[15]));
+    v = ((a[15]&(alufn[0]^b[15])&~ans[15]) | (~a[15]&~(alufn[0]^b[15])&ans[15]));
     // n is true when ans[15] is 1
     n = ans[15];
     
