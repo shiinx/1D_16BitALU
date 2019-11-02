@@ -22,7 +22,6 @@ module shifter (
         shift = $signed(a)>>>b[3:0]; 
       default:
         shift = 0;
-        
     }
   }
 }
