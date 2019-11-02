@@ -10,18 +10,18 @@ module shifter (
   
     shift=0;
     
-    case(alufn[1:0]){
+    case(alufn[3:0]){
       
       //shift left
-      b00:
+      b0000:
         shift=a<<b[3:0]; 
       
       //shift right
-      b01:
+      b0001:
         shift=a>>b[3:0];
       
       //shift right signed
-      b11:
+      b0011:
         shift=$signed(a)>>>b[3:0]; 
         
     }
