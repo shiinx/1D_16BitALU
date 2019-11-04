@@ -19,13 +19,21 @@ module mojo_top (
   ) {
   
   sig rst;                  // reset signal
-  alu alu;
-  
-  .clk(clk) {
+   .clk(clk) {
     // The reset conditioner is used to synchronize the reset signal to the FPGA
     // clock. This ensures the entire FPGA comes out of reset at the same time.
     reset_conditioner reset_cond;
+    .rst(rst){
+      multi_seven_seg seg;
+      counter slowclk(#SIZE(1),#DIV(25));
+    }
   }
+  .clk(slowclk.value){
+    .rst(rst){
+      tester tester;
+    }
+  }
+
   
   always {
     reset_cond.in = ~rst_n; // input raw inverted reset signal
@@ -40,13 +48,11 @@ module mojo_top (
     io_seg = 8hff;          // turn segments off
     io_sel = 4hf;           // select no digits
     
-    alu.a = $signed(16b1000111111111111);
-    alu.b = $signed(16b1000000010101010);
-    alu.alufn = io_dip[2][5:0];
-    io_led[0] = alu.alu[7:0];
-    io_led[1] = alu.alu[15:8];
-    io_led[2][0] = alu.z;
-    io_led[2][1] = alu.v;
-    io_led[2][2] = alu.n;
+    io_led[2][7] = tester.success;
+    io_led[2][6] = tester.error;
+    seg.values = tester.displaystate;
+    io_seg = ~seg.seg;      // connect segments to the driver
+    io_sel = ~seg.sel;      // connect digit select to the driver
+    
     }
 }

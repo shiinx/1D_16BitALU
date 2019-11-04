@@ -1,0 +1,303 @@
+module tester (
+    input clk,  // clock
+    input rst,  // reset_conditioner  
+    output success,
+    output error,
+    output displaystate[4][4]
+  ) {
+  
+  alu aluMOD;
+  fsm state (.clk(clk), .rst(rst)) = {START, ARI1, ARI2, ARI3, BOOLE1, BOOLE2, BOOLE3, BOOLE4, BOOLE5, BOOLE6, BOOLE7, BOOLE8, CMP1, CMP2, CMP3, CMP4, CMP5, CMP6, SHIFT1, SHIFT2, SHIFT3, SUCCESS, ERROR};  
+  
+  always {
+    state.d = state.q;
+    aluMOD.a = 16b0;
+    aluMOD.b = 16b0;
+    aluMOD.alufn = 16b0;
+    success = 0;
+    error = 0;
+    displaystate = {4h0,4h0,4h0,4h0};
+    case(state.q){
+      state.START:
+        aluMOD.a = 16b0000000000000000;
+        aluMOD.b = 16b0000000000000000;
+        aluMOD.alufn = 6b000000;
+        displaystate = {4d0,4d0,4d0,4d0};
+        state.d = state.ARI1;
+        
+      state.ARI1:
+        aluMOD.a = 16b0000001101101100;
+        aluMOD.b = 16b0000010001110001;
+        aluMOD.alufn = 6b000000;
+        displaystate = {4d10,4d15,4d15,4d1};
+        if(aluMOD.alu == 16b0000011111011101){
+          state.d = state.ARI2;
+          success = 1;
+        }else{
+          state.d = state.ERROR;
+          error = 1;
+        }
+        
+      state.ARI2:
+        aluMOD.a = 16b0010101101100111;
+        aluMOD.b = 16b0000000101111100;
+        aluMOD.alufn = 6b000001;
+        displaystate = {4d10,4d15,4d15,4d2};
+        if(aluMOD.alu == 16b0010100111101011){
+          state.d = state.ARI3;
+          success = 1;
+        }else{
+          state.d = state.ERROR;
+          error = 1;
+        }
+        
+      state.ARI3:
+        aluMOD.a = 16b0000011111100011;
+        aluMOD.b = 16b0000000110010111;
+        aluMOD.alufn = 6b000010;
+        displaystate = {4d10,4d15,4d15,4d3};
+        if(aluMOD.alu == 16b1000100111100101){
+          state.d = state.BOOLE1;
+          success = 1;
+        }else{
+          state.d = state.ERROR;
+          error = 1;
+        }
+        
+      state.BOOLE1:
+        aluMOD.a = 16b0001000111010111;
+        aluMOD.b = 16b0001101010000101;
+        aluMOD.alufn = 6b011000;
+        displaystate = {4d11,4d13,4d13,4d1};
+        if(aluMOD.alu == 16b0001000010000101){
+          state.d = state.BOOLE2;
+          success = 1;
+        }else{
+          state.d = state.ERROR;
+          error = 1;
+        }
+        
+      state.BOOLE2:
+        aluMOD.a = 16b0000000101110000;
+        aluMOD.b = 16b0001000010001010;
+        aluMOD.alufn = 6b010110;
+        displaystate = {4d11,4d13,4d13,4d2};        
+        if(aluMOD.alu == 16b0001000111111010){
+          state.d = state.BOOLE3;
+          success = 1;
+        }else{
+          state.d = state.ERROR;
+          error = 1;
+        }
+        
+      state.BOOLE3:
+        aluMOD.a = 16b0000001000011111;
+        aluMOD.b = 16b0000000001011001;
+        aluMOD.alufn = 6b011110;
+        displaystate = {4d11,4d13,4d13,4d3};
+        if(aluMOD.alu == 16b0000001001011111){
+          state.d = state.BOOLE4;
+          success = 1;
+        }else{
+          state.d = state.ERROR;
+          error = 1;
+        }
+        
+      state.BOOLE4:
+        aluMOD.a = 16b0000110111010110;
+        aluMOD.b = 16b0000000100101000;
+        aluMOD.alufn = 6b011010;
+        displaystate = {4d11,4d13,4d13,4d4};
+        if(aluMOD.alu == 16b0000110111010110){
+          state.d = state.BOOLE5;
+          success = 1;
+        }else{
+          state.d = state.ERROR;
+          error = 1;
+        }
+        
+      state.BOOLE5:
+        aluMOD.a = 16b0000001010000110;
+        aluMOD.b = 16b0000001101101100;
+        aluMOD.alufn = 6b010111;
+        displaystate = {4d11,4d13,4d13,4d5};
+        if(aluMOD.alu == 16b1111110111111011){
+          state.d = state.BOOLE6;
+          success = 1;
+        }else{
+          state.d = state.ERROR;
+          error = 1;
+        }
+        
+      state.BOOLE6:
+        aluMOD.a = 16b0100101110101111;
+        aluMOD.b = 16b0100000010100000;
+        aluMOD.alufn = 6b011001;
+        displaystate = {4d11,4d13,4d13,4d6};
+        if(aluMOD.alu == 16b1111010011110000){
+          state.d = state.BOOLE7;
+          success = 1;
+        }else{
+          state.d = state.ERROR;
+          error = 1;
+        }
+        
+      state.BOOLE7:
+        aluMOD.a = 16b0000101000010011;
+        aluMOD.b = 16b0000000100010011;
+        aluMOD.alufn = 6b010001;
+        displaystate = {4d11,4d13,4d13,4d7};
+        if(aluMOD.alu == 16b1111010011101100){
+          state.d = state.BOOLE8;
+          success = 1;
+        }else{
+          state.d = state.ERROR;
+          error = 1;
+        }
+        
+      state.BOOLE8:
+        aluMOD.a = 16b0000000000101101;
+        aluMOD.b = 16b0000000001010100;
+        aluMOD.alufn = 6b011100;
+        displaystate = {4d11,4d13,4d13,4d8};
+        if(aluMOD.alu == 16b0000000001010100){
+          state.d = state.CMP1;
+          success = 1;
+        }else{
+          state.d = state.ERROR;
+          error = 1;
+        }
+        
+      state.CMP1:
+        aluMOD.a = 16b0101010101010101;
+        aluMOD.b = 16b0101010101010101;
+        aluMOD.alufn = 6b110011;
+        displaystate = {4d12,4d13,4d0,4d1};
+        if(aluMOD.alu == 16b0000000000000001){
+          state.d = state.CMP2;
+          success = 1;
+        }else{
+          state.d = state.ERROR;
+          error = 1;
+        }
+        
+      state.CMP2:
+        aluMOD.a = 16b0101010101010101;
+        aluMOD.b = 16b0000000000000000;
+        aluMOD.alufn = 6b110011;
+        displaystate = {4d12,4d13,4d0,4d2};
+        if(aluMOD.alu == 16b0000000000000000){
+          state.d = state.CMP3;
+          success = 1;
+        }else{
+          state.d = state.ERROR;
+          error = 1;
+        }
+        
+      state.CMP3:
+        aluMOD.a = 16b0000000000010101;
+        aluMOD.b = 16b0000100000000000;
+        aluMOD.alufn = 6b110101;
+        displaystate = {4d12,4d13,4d0,4d3};
+        if(aluMOD.alu == 16b0000000000000001){
+          state.d = state.CMP4;
+          success = 1;
+        }else{
+          state.d = state.ERROR;
+          error = 1;
+        }
+        
+      state.CMP4:
+        aluMOD.a = 16b0000100000000000;
+        aluMOD.b = 16b0000000000010101;
+        aluMOD.alufn = 6b110101;
+        displaystate = {4d12,4d13,4d0,4d4};
+        if(aluMOD.alu == 16b0000000000000000){
+          state.d = state.CMP5;
+          success = 1;
+        }else{
+          state.d = state.ERROR;
+          error = 1;
+        }
+        
+      state.CMP5:
+        aluMOD.a = 16b0000000000010101;
+        aluMOD.b = 16b0000100000000000;
+        aluMOD.alufn = 6b110111;
+        displaystate = {4d12,4d13,4d0,4d5};
+        if(aluMOD.alu == 16b0000000000000001){
+          state.d = state.CMP6;
+          success = 1;
+        }else{
+          state.d = state.ERROR;
+          error = 1;
+        }
+        
+      state.CMP6:
+        aluMOD.a = 16b0000100000000000;
+        aluMOD.b = 16b0000000000010101;
+        aluMOD.alufn = 6b110111;
+        displaystate = {4d12,4d13,4d0,4d6};
+        if(aluMOD.alu == 16b0000000000000000){
+          state.d = state.SHIFT1;
+          success = 1;
+        }else{
+          state.d = state.ERROR;
+          error = 1;
+        }
+        
+      state.SHIFT1:
+        aluMOD.a = 16b0000111000110000;
+        aluMOD.b = 16b0011010101011010;
+        aluMOD.alufn = 6b100000;
+        displaystate = {4d5,4d14,4d0,4d1};
+        if(aluMOD.alu == 16b1100000000000000){
+          state.d = state.SHIFT2;
+          success = 1;
+        }else{
+          state.d = state.ERROR;
+          error = 1;
+        }
+      
+      state.SHIFT2:
+        aluMOD.a = 16b0000111000110000;
+        aluMOD.b = 16b0011010101011010;
+        aluMOD.alufn = 6b100001;
+        displaystate = {4d5,4d14,4d0,4d2};
+        if(aluMOD.alu == 16b0000000000000011){
+          state.d = state.SHIFT3;
+          success = 1;
+        }else{
+          state.d = state.ERROR;
+          error = 1;
+        }
+        
+      state.SHIFT3:
+        aluMOD.a = 16b1000111000110000;
+        aluMOD.b = 16b0011010101011010;
+        aluMOD.alufn = 6b100011;
+        displaystate = {4d5,4d14,4d0,4d3};
+        if(aluMOD.alu == 16b1111111111100011){
+          state.d = state.SUCCESS;
+          success = 1;
+        }else{
+          state.d = state.ERROR;
+          error = 1;
+        }
+        
+      state.SUCCESS:
+        displaystate = {4d0,4d5,4d5,4d0};
+        state.d = state.START;
+        success = 1;
+        
+      state.ERROR:
+        displaystate = {4d9,4d15,4d15,4d0};
+        error = 1;
+                
+      default:
+        aluMOD.a = 16b0000000000000000;
+        aluMOD.b = 16b0000000000000000;
+        aluMOD.alufn = 6b000000;
+      }
+  }
+}
