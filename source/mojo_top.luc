@@ -17,7 +17,7 @@ module mojo_top (
     input io_button [5],    // 5 buttons on IO Shield
     input io_dip [3][8]     // DIP switches on IO Shield
   ) {
-  
+  alu alu;
   sig rst;                  // reset signal
    .clk(clk) {
     // The reset conditioner is used to synchronize the reset signal to the FPGA
@@ -31,6 +31,7 @@ module mojo_top (
   .clk(slowclk.value){
     .rst(rst){
       tester tester;
+      faketester faketester;
     }
   }
 
@@ -47,12 +48,40 @@ module mojo_top (
     io_led = 3x{{8h00}};    // turn LEDs off
     io_seg = 8hff;          // turn segments off
     io_sel = 4hf;           // select no digits
+    alu.a = 0;
+    alu.b = 0;
+    alu.alufn = 0;
+    tester.switchedon = io_dip[2][7] & ~io_dip[2][6];
+    faketester.switchedon = io_dip[2][7] & io_dip[2][6];
     
-    io_led[2][7] = tester.success;
-    io_led[2][6] = tester.error;
-    seg.values = tester.displaystate;
-    io_seg = ~seg.seg;      // connect segments to the driver
-    io_sel = ~seg.sel;      // connect digit select to the driver
-    
+    if(io_dip[2][7] == 1 && io_dip[2][6] == 0) {
+      // auto tester mode w/ no error
+      io_led[2][7] = tester.success;
+      io_led[2][6] = tester.error;
+      seg.values = tester.displaystate;
+      io_seg = ~seg.seg;      // connect segments to the driver
+      io_sel = ~seg.sel;      // connect digit select to the driver  
+    }else if(io_dip[2][7] == 1 && io_dip[2][6] == 1){
+      // auto tester mode w/ intentional error to demonstrate error case
+      io_led[2][7] = faketester.success;
+      io_led[2][6] = faketester.error;
+      seg.values = faketester.displaystate;
+      io_seg = ~seg.seg;      // connect segments to the driver
+      io_sel = ~seg.sel;      // connect digit select to the driver  
+    }else{
+      // manual mode
+      alu.a = d4;
+      alu.b = d2;
+      alu.alufn = io_dip[2][5:0];
+      io_led[0] = alu.alu[7:0];
+      io_led[1] = alu.alu[15:8];
+      io_led[2][0] = alu.z;
+      io_led[2][1] = alu.v;
+      io_led[2][2] = alu.n;
+      seg.values = {4d0,4d0,4d0,4d0};
+      io_seg = ~seg.seg;      // connect segments to the driver
+      io_sel = ~seg.sel;      // connect digit select to the driver 
     }
+    
+  }
 }

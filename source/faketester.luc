@@ -1,6 +1,6 @@
-module tester (
+module faketester (
     input clk,  // clock
-    input rst,  // reset_conditioner
+    input rst,  // reset_conditioner  
     input switchedon,  
     output success,
     output error,
@@ -85,7 +85,7 @@ module tester (
         aluMOD.b = 16b0001000010001010;
         aluMOD.alufn = 6b010110;
         displaystate = {4d11,4d13,4d13,4d2};        
-        if(aluMOD.alu == 16b0001000111111010){
+        if(16b0001011111111010 == 16b0001000111111010){ // created an error here t
           state.d = state.BOOLE3;
           success = 1;
         }else{
@@ -295,7 +295,7 @@ module tester (
         
       state.ERROR:
         displaystate = {4d9,4d15,4d15,4d0};
-        error = 1;
+        error = 1;        
                 
       default:
         aluMOD.a = 16b0000000000000000;
