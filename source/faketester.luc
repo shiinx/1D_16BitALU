@@ -1,4 +1,4 @@
-module faketester (
+module faketester ( // same as tester except state boole2 is set up to fail
     input clk,  // clock
     input rst,  // reset_conditioner  
     input switchedon,  

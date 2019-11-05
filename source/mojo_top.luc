@@ -17,23 +17,23 @@ module mojo_top (
     input io_button [5],    // 5 buttons on IO Shield
     input io_dip [3][8]     // DIP switches on IO Shield
   ) {
-  alu alu;
+  alu alu;                  // initialize alu unit
   sig rst;                  // reset signal
    .clk(clk) {
     // The reset conditioner is used to synchronize the reset signal to the FPGA
     // clock. This ensures the entire FPGA comes out of reset at the same time.
     reset_conditioner reset_cond;
     .rst(rst){
-      dff a[16];
-      dff b[16];    
+      dff a[16];    // dff to store A input for manual input
+      dff b[16];    // dff to store B input for manual input
       multi_seven_seg seg;
       counter slowclk(#SIZE(1),#DIV(25));
     }
   }
-  .clk(slowclk.value){
+  .clk(slowclk.value){ // slow counter for the auto tester
     .rst(rst){
-      tester tester;
-      faketester faketester;
+      tester tester;             // initialize tester circuit
+      faketester faketester;     // initialize fake tester circuit
     }
   }
 
@@ -50,45 +50,50 @@ module mojo_top (
     io_led = 3x{{8h00}};    // turn LEDs off
     io_seg = 8hff;          // turn segments off
     io_sel = 4hf;           // select no digits
-    alu.a = a.q;
-    alu.b = b.q;
+    alu.a = 0; 
+    alu.b = 0;
     alu.alufn = 0;
-    tester.switchedon = io_dip[2][7] & ~io_dip[2][6];
-    faketester.switchedon = io_dip[2][7] & io_dip[2][6];
+    tester.switchedon = io_dip[2][7] & ~io_dip[2][6];      // left most switch must be on and 2nd left most must be off
+    faketester.switchedon = io_dip[2][7] & io_dip[2][6];   // left most and 2nd left most must both be on
     
     if(io_dip[2][7] == 1 && io_dip[2][6] == 0) {
       // auto tester mode w/ no error
-      io_led[2][7] = tester.success;
-      io_led[2][6] = tester.error;
-      seg.values = tester.displaystate;
-      io_seg = ~seg.seg;      // connect segments to the driver
-      io_sel = ~seg.sel;      // connect digit select to the driver  
+      io_led[2][7] = tester.success;      // if output and expected output match, light up led
+      io_led[2][6] = tester.error;        // if output and expected output dont match, light up this led
+      seg.values = tester.displaystate;   // display state names in sev seg
+      io_seg = ~seg.seg;                  // connect segments to the driver
+      io_sel = ~seg.sel;                  // connect digit select to the driver  
     }else if(io_dip[2][7] == 1 && io_dip[2][6] == 1){
       // auto tester mode w/ intentional error to demonstrate error case
-      io_led[2][7] = faketester.success;
-      io_led[2][6] = faketester.error;
-      seg.values = faketester.displaystate;
-      io_seg = ~seg.seg;      // connect segments to the driver
-      io_sel = ~seg.sel;      // connect digit select to the driver  
+      io_led[2][7] = faketester.success;      // if output and expected output match, light up led
+      io_led[2][6] = faketester.error;        // if output and expected output dont match, light up this led
+      seg.values = faketester.displaystate;   // display state names in sev seg
+      io_seg = ~seg.seg;                      // connect segments to the driver
+      io_sel = ~seg.sel;                      // connect digit select to the driver  
     }else{
       // manual mode
-      if(io_button[0] == 1){         
+      if(io_button[0] == 1){
+        // press up button to store switch states into A         
         a.d[15:8] = io_dip[1];
         a.d[7:0] = io_dip[0];
       }
       if(io_button[1] == 1){
+        // press center button to store switch states into B
         b.d[15:8] = io_dip[1];
         b.d[7:0] = io_dip[0];
-      }
-      alu.alufn = io_dip[2][5:0];
-      io_led[0] = alu.alu[7:0];
+      }      
+      alu.a = a.q;                  // output dff a q into alu input a 
+      alu.b = b.q;                  // output dff b q into alu input b
+      alu.alufn = io_dip[2][5:0];   // switch [2][5:0] for alufn, alu functions
+      // output alu output into led row
+      io_led[0] = alu.alu[7:0];  
       io_led[1] = alu.alu[15:8];
       io_led[2][0] = alu.z;
       io_led[2][1] = alu.v;
       io_led[2][2] = alu.n;
-      seg.values = {4d0,4d0,4d0,4d0};
-      io_seg = ~seg.seg;      // connect segments to the driver
-      io_sel = ~seg.sel;      // connect digit select to the driver 
+      seg.values = {4d0,4d0,4d0,4d0};  //show nothing on sev seg in manual mode
+      io_seg = ~seg.seg;               // connect segments to the driver
+      io_sel = ~seg.sel;               // connect digit select to the driver 
     }
     
   }

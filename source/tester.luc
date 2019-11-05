@@ -1,13 +1,16 @@
 module tester (
+    // if test succeeds, success = 1 and state changes to next state 
+    // else error = 1 and state changes to error and stays in error state
     input clk,  // clock
     input rst,  // reset_conditioner
-    input switchedon,  
-    output success,
-    output error,
-    output displaystate[4][4]
+    input switchedon,  // input switch state
+    output success,    // output for display
+    output error,      // output for display
+    output displaystate[4][4]  // output for display
   ) {
   
   alu aluMOD;
+  // define states
   fsm state (.clk(clk), .rst(rst)) = {START, ARI1, ARI2, ARI3, BOOLE1, BOOLE2, BOOLE3, BOOLE4, BOOLE5, BOOLE6, BOOLE7, BOOLE8, CMP1, CMP2, CMP3, CMP4, CMP5, CMP6, SHIFT1, SHIFT2, SHIFT3, SUCCESS, ERROR};  
   
   always {
@@ -18,8 +21,11 @@ module tester (
     success = 0;
     error = 0;
     displaystate = {4h0,4h0,4h0,4h0};
+    
     case(state.q){
+    
       state.START:
+        // start state
         aluMOD.a = 16b0000000000000000;
         aluMOD.b = 16b0000000000000000;
         aluMOD.alufn = 6b000000;
@@ -29,6 +35,7 @@ module tester (
         }
         
       state.ARI1:
+        // arithmetic test, ADD
         aluMOD.a = 16b0000001101101100;
         aluMOD.b = 16b0000010001110001;
         aluMOD.alufn = 6b000000;
@@ -42,6 +49,7 @@ module tester (
         }
         
       state.ARI2:
+        // arithmetic test, SUB
         aluMOD.a = 16b0010101101100111;
         aluMOD.b = 16b0000000101111100;
         aluMOD.alufn = 6b000001;
@@ -55,6 +63,7 @@ module tester (
         }
         
       state.ARI3:
+        // arithmetic, MUL
         aluMOD.a = 16b0000011111100011;
         aluMOD.b = 16b0000000110010111;
         aluMOD.alufn = 6b000010;
@@ -68,6 +77,7 @@ module tester (
         }
         
       state.BOOLE1:
+        // boolean, AND
         aluMOD.a = 16b0001000111010111;
         aluMOD.b = 16b0001101010000101;
         aluMOD.alufn = 6b011000;
@@ -81,6 +91,7 @@ module tester (
         }
         
       state.BOOLE2:
+        // boolean, OR
         aluMOD.a = 16b0000000101110000;
         aluMOD.b = 16b0001000010001010;
         aluMOD.alufn = 6b010110;
@@ -94,6 +105,7 @@ module tester (
         }
         
       state.BOOLE3:
+        // boolean, XOR
         aluMOD.a = 16b0000001000011111;
         aluMOD.b = 16b0000000001011001;
         aluMOD.alufn = 6b011110;
@@ -107,6 +119,7 @@ module tester (
         }
         
       state.BOOLE4:
+        // boolean, 'A'
         aluMOD.a = 16b0000110111010110;
         aluMOD.b = 16b0000000100101000;
         aluMOD.alufn = 6b011010;
@@ -120,6 +133,7 @@ module tester (
         }
         
       state.BOOLE5:
+        // boolean, NAND
         aluMOD.a = 16b0000001010000110;
         aluMOD.b = 16b0000001101101100;
         aluMOD.alufn = 6b010111;
@@ -133,6 +147,7 @@ module tester (
         }
         
       state.BOOLE6:
+        // boolean, NOR
         aluMOD.a = 16b0100101110101111;
         aluMOD.b = 16b0100000010100000;
         aluMOD.alufn = 6b011001;
@@ -146,6 +161,7 @@ module tester (
         }
         
       state.BOOLE7:
+        // boolean, XNOR
         aluMOD.a = 16b0000101000010011;
         aluMOD.b = 16b0000000100010011;
         aluMOD.alufn = 6b010001;
@@ -159,6 +175,7 @@ module tester (
         }
         
       state.BOOLE8:
+        // boolean 'B'
         aluMOD.a = 16b0000000000101101;
         aluMOD.b = 16b0000000001010100;
         aluMOD.alufn = 6b011100;
@@ -172,6 +189,7 @@ module tester (
         }
         
       state.CMP1:
+        // compare, equal true
         aluMOD.a = 16b0101010101010101;
         aluMOD.b = 16b0101010101010101;
         aluMOD.alufn = 6b110011;
@@ -185,6 +203,7 @@ module tester (
         }
         
       state.CMP2:
+        // compare, equal false
         aluMOD.a = 16b0101010101010101;
         aluMOD.b = 16b0000000000000000;
         aluMOD.alufn = 6b110011;
@@ -198,6 +217,7 @@ module tester (
         }
         
       state.CMP3:
+        // compare, less than true
         aluMOD.a = 16b0000000000010101;
         aluMOD.b = 16b0000100000000000;
         aluMOD.alufn = 6b110101;
@@ -211,6 +231,7 @@ module tester (
         }
         
       state.CMP4:
+        // compare, less than false
         aluMOD.a = 16b0000100000000000;
         aluMOD.b = 16b0000000000010101;
         aluMOD.alufn = 6b110101;
@@ -224,6 +245,7 @@ module tester (
         }
         
       state.CMP5:
+        // compare, less than or equal true
         aluMOD.a = 16b0000000000010101;
         aluMOD.b = 16b0000100000000000;
         aluMOD.alufn = 6b110111;
@@ -237,6 +259,7 @@ module tester (
         }
         
       state.CMP6:
+        // compare, less than or equal false
         aluMOD.a = 16b0000100000000000;
         aluMOD.b = 16b0000000000010101;
         aluMOD.alufn = 6b110111;
@@ -250,6 +273,7 @@ module tester (
         }
         
       state.SHIFT1:
+        // shift, left
         aluMOD.a = 16b0000111000110000;
         aluMOD.b = 16b0011010101011010;
         aluMOD.alufn = 6b100000;
@@ -263,6 +287,7 @@ module tester (
         }
       
       state.SHIFT2:
+        // shift, right
         aluMOD.a = 16b0000111000110000;
         aluMOD.b = 16b0011010101011010;
         aluMOD.alufn = 6b100001;
@@ -276,6 +301,7 @@ module tester (
         }
         
       state.SHIFT3:
+        // shift, right a
         aluMOD.a = 16b1000111000110000;
         aluMOD.b = 16b0011010101011010;
         aluMOD.alufn = 6b100011;
@@ -289,12 +315,14 @@ module tester (
         }
         
       state.SUCCESS:
+        // successful
         displaystate = {4d0,4d5,4d5,4d0};
-        state.d = state.START;
+        state.d = state.START; // change state to start
         success = 1;
         
       state.ERROR:
-        displaystate = {4d9,4d15,4d15,4d0};
+        // error state when assertions fail
+        displaystate = {4d9,4d15,4d15,4d0}; // display err on sev seg
         error = 1;
                 
       default:

@@ -5,20 +5,29 @@ module compare (
     input alufn[6], // ALUFN[5:0]
     output cmp[16] // compare output
   ) {
+  
 sig cmpLast;
+  
   always {
-    case(alufn[3:0]){
+    case(alufn[3:0]){ // based on alufn, pick which operator
+    
       4b0011:
-        cmpLast = z;
+        // compare for equal
+        cmpLast = z; 
+        
       4b0101:
-        cmpLast = n^v;   
+        // compare for less than
+        cmpLast = n^v;
+        
       4b0111:
+        // compare for less than or equal
         cmpLast= z|(n^v);
       
       default:
         cmpLast = b0;
        }
-    cmp[0] = cmpLast;
-    cmp[15:1] = 15b00000000000000;
+    
+    cmp[0] = cmpLast;  // assign result to rightmost bit (LSB)
+    cmp[15:1] = 15b00000000000000;  // assign other bits to 0
     }
 }
