@@ -24,6 +24,8 @@ module mojo_top (
     // clock. This ensures the entire FPGA comes out of reset at the same time.
     reset_conditioner reset_cond;
     .rst(rst){
+      dff a[16];
+      dff b[16];    
       multi_seven_seg seg;
       counter slowclk(#SIZE(1),#DIV(25));
     }
@@ -48,8 +50,8 @@ module mojo_top (
     io_led = 3x{{8h00}};    // turn LEDs off
     io_seg = 8hff;          // turn segments off
     io_sel = 4hf;           // select no digits
-    alu.a = 0;
-    alu.b = 0;
+    alu.a = a.q;
+    alu.b = b.q;
     alu.alufn = 0;
     tester.switchedon = io_dip[2][7] & ~io_dip[2][6];
     faketester.switchedon = io_dip[2][7] & io_dip[2][6];
@@ -70,8 +72,14 @@ module mojo_top (
       io_sel = ~seg.sel;      // connect digit select to the driver  
     }else{
       // manual mode
-      alu.a = d4;
-      alu.b = d2;
+      if(io_button[0] == 1){         
+        a.d[15:8] = io_dip[1];
+        a.d[7:0] = io_dip[0];
+      }
+      if(io_button[1] == 1){
+        b.d[15:8] = io_dip[1];
+        b.d[7:0] = io_dip[0];
+      }
       alu.alufn = io_dip[2][5:0];
       io_led[0] = alu.alu[7:0];
       io_led[1] = alu.alu[15:8];
